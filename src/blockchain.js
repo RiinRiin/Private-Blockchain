@@ -189,7 +189,15 @@ class Blockchain {
         let stars = [];
         return new Promise((resolve, reject) => {
             try {
-                
+                this.chain.forEach((block) => {
+                    let data = block.getBData;
+                    if (data) {
+                        if (data.owner === address) {
+                            starts.push(data);
+                        }
+                    }
+                });
+                resolve(stars);
             } catch (error) {
                 reject(error);
             }
