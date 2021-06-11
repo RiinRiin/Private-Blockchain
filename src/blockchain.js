@@ -66,20 +66,6 @@ class Blockchain {
     }
 
     /**
-     * The requestMessageOwnershipVerification(address) method
-     * will allow you to request a message that you will use to
-     * sign it with your Bitcoin Wallet (Electrum or Bitcoin Core)
-     * This is the first step before submit your Block.
-     * The method return a Promise that will resolve with the message to be signed
-     * @param {*} address 
-     */
-     requestMessageOwnershipVerification(address) {
-        return new Promise((resolve) => {
-            resolve(`${address}:${new Date().getTime().toString().slice(0, -3)}:starRegistry`);
-        });
-    }
-
-    /**
      * _addBlock(block) will store a block in the chain
      * @param {*} block 
      * The method will return a Promise that will resolve with the block added
@@ -95,7 +81,7 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             try{
                 // Get current height of the blockchain
-                let chainHeight = await this.getChainHeight()
+                let chainHeight = await this.getChainHeight();
                 // Check if there is a genesis block
                 if(chainHeight > 0) {
                     // Get previous block
@@ -113,9 +99,23 @@ class Blockchain {
                 block.height = chainHeight + 1;
                 // Return the latest block added to blockchain
                 resolve(block);
-            } catch {
-                reject(Error)
+            } catch(error) {
+                reject(error);
             }
+        });
+    }
+
+    /**
+     * The requestMessageOwnershipVerification(address) method
+     * will allow you to request a message that you will use to
+     * sign it with your Bitcoin Wallet (Electrum or Bitcoin Core)
+     * This is the first step before submit your Block.
+     * The method return a Promise that will resolve with the message to be signed
+     * @param {*} address 
+     */
+     requestMessageOwnershipVerification(address) {
+        return new Promise((resolve) => {
+            resolve(`${address}:${new Date().getTime().toString().slice(0, -3)}:starRegistry`);
         });
     }
 
@@ -143,18 +143,18 @@ class Blockchain {
                 let currTime = parseInt(new Date().getTime().toString().slice(0, -3));
                 // Check if time elapsed is less than 5 minutes
                 if (currTime - msgTime <= 5) {
-                    // Verify msg is valid
+                    // Verify msg is valid using 'bitcoinjs-message' library
                     const msgValid = bitcoinMessage.verify(message, address, signature);
                     if (msgValid) {
                         // Create a new block
-                        let newBlock = new BlockClass.Block({star:star, owner:address})
+                        let newBlock = new BlockClass.Block({star:star, owner:address});
                         // Add the new block to the chain
                         let newBlockAdded = await this._addBlock.toString(newBlock);
-                        resolve(newBlockAdded)
+                        resolve(newBlockAdded);
                     }
                 }
             } catch (error) {
-                reject(error)
+                reject(error);
             }
         });
     }
@@ -168,12 +168,13 @@ class Blockchain {
     getBlockByHash(hash) {
         return new Promise((resolve, reject) => {
             try {
-                let block = this.chain.find((block) => hash === block.hash)
+                // Find block that has matching hash
+                let block = this.chain.find((block) => hash === block.hash);
                 if (block) {
-                    resolve(block)
+                    resolve(block);
                 }
             } catch (error) {
-                reject(error)
+                reject(error);
             }
         });
     }
@@ -187,7 +188,11 @@ class Blockchain {
     getStarsByWalletAddress (address) {
         let stars = [];
         return new Promise((resolve, reject) => {
-            
+            try {
+                
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
@@ -200,7 +205,11 @@ class Blockchain {
     validateChain() {
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            
+            try {
+                
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
