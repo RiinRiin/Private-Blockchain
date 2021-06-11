@@ -62,7 +62,6 @@ class Blockchain {
      * that this method is a private method. 
      */
     _addBlock(block) {
-        // let self = this;
         return new Promise(async (resolve, reject) => {
             try{
                 // Get current height of the blockchain
@@ -76,12 +75,12 @@ class Blockchain {
                 }
                 // Assign a new hash for this new block
                 block.hash = SHA256(JSON.stringify(block)).toString();
-                // Assign a new block height by incrementing by one
-                block.height = chainHeight + 1;
                 // Assign timestamp of this new block
                 block.time = new Date().getTime().toString().slice(0,-3);
                 // Add the new block to the blockchain
                 this.chain.push(block);
+                // Update the new block height after pushing the new block
+                block.height = chainHeight + 1;
                 // Return the latest block added to blockchain
                 resolve(block);
             } catch {
@@ -122,9 +121,25 @@ class Blockchain {
      * @param {*} star 
      */
     submitStar(address, message, signature, star) {
-        let self = this;
         return new Promise(async (resolve, reject) => {
-            
+            try {
+                let msgTime = parseInt(message.split(':')[1]);
+                let currTime = parseInt(new Date().getTime().toString().slice(0, -3));
+                // Check if time elapsed is less than 5 minutes
+                if (currTime - msgTime <= 5) {
+                    // Verify msg is valid
+                    const msgValid = bitcoinMessage.verify(message, address, signature);
+                    if (msgValid) {
+                        // Create a new block
+                        let newBlock = new BlockClass.Block({star:star, owner:address})
+                        // Add the new block to the chain
+                        let newBlockAdded = await this._addBlock.toString(newBlock);
+                        resolve(newBlockAdded)
+                    }
+                }
+            } catch (error) {
+                reject(error)
+            }
         });
     }
 
@@ -135,7 +150,6 @@ class Blockchain {
      * @param {*} hash 
      */
     getBlockByHash(hash) {
-        let self = this;
         return new Promise((resolve, reject) => {
            
         });
@@ -147,9 +161,8 @@ class Blockchain {
      * @param {*} height 
      */
     getBlockByHeight(height) {
-        let self = this;
         return new Promise((resolve, reject) => {
-            let block = self.chain.filter(p => p.height === height)[0];
+            let block = this.chain.filter(p => p.height === height)[0];
             if(block){
                 resolve(block);
             } else {
@@ -165,7 +178,6 @@ class Blockchain {
      * @param {*} address 
      */
     getStarsByWalletAddress (address) {
-        let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
             
@@ -179,7 +191,6 @@ class Blockchain {
      * 2. Each Block should check the with the previousBlockHash
      */
     validateChain() {
-        let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
             
