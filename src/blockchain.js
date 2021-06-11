@@ -50,6 +50,36 @@ class Blockchain {
     }
 
     /**
+     * This method will return a Promise that will resolve with the Block object 
+     * with the height equal to the parameter `height`
+     * @param {*} height 
+     */
+     getBlockByHeight(height) {
+        return new Promise((resolve, reject) => {
+            let block = this.chain.filter(p => p.height === height)[0];
+            if(block){
+                resolve(block);
+            } else {
+                resolve(null);
+            }
+        });
+    }
+
+    /**
+     * The requestMessageOwnershipVerification(address) method
+     * will allow you to request a message that you will use to
+     * sign it with your Bitcoin Wallet (Electrum or Bitcoin Core)
+     * This is the first step before submit your Block.
+     * The method return a Promise that will resolve with the message to be signed
+     * @param {*} address 
+     */
+     requestMessageOwnershipVerification(address) {
+        return new Promise((resolve) => {
+            resolve(`${address}:${new Date().getTime().toString().slice(0, -3)}:starRegistry`);
+        });
+    }
+
+    /**
      * _addBlock(block) will store a block in the chain
      * @param {*} block 
      * The method will return a Promise that will resolve with the block added
@@ -86,20 +116,6 @@ class Blockchain {
             } catch {
                 reject(Error)
             }
-        });
-    }
-
-    /**
-     * The requestMessageOwnershipVerification(address) method
-     * will allow you to request a message that you will use to
-     * sign it with your Bitcoin Wallet (Electrum or Bitcoin Core)
-     * This is the first step before submit your Block.
-     * The method return a Promise that will resolve with the message to be signed
-     * @param {*} address 
-     */
-    requestMessageOwnershipVerification(address) {
-        return new Promise((resolve) => {
-            resolve(`${address}:${new Date().getTime().toString().slice(0, -3)}:starRegistry`);
         });
     }
 
@@ -151,22 +167,13 @@ class Blockchain {
      */
     getBlockByHash(hash) {
         return new Promise((resolve, reject) => {
-           
-        });
-    }
-
-    /**
-     * This method will return a Promise that will resolve with the Block object 
-     * with the height equal to the parameter `height`
-     * @param {*} height 
-     */
-    getBlockByHeight(height) {
-        return new Promise((resolve, reject) => {
-            let block = this.chain.filter(p => p.height === height)[0];
-            if(block){
-                resolve(block);
-            } else {
-                resolve(null);
+            try {
+                let block = this.chain.find((block) => hash === block.hash)
+                if (block) {
+                    resolve(block)
+                }
+            } catch (error) {
+                reject(error)
             }
         });
     }
