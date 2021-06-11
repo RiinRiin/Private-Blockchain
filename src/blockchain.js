@@ -189,7 +189,7 @@ class Blockchain {
         let stars = [];
         return new Promise((resolve, reject) => {
             try {
-                this.chain.forEach((block) => {
+                this.chain.forEach(async(block) => {
                     let data = await block.getBData();
                     if (data) {
                         if (data.owner === address) {
@@ -214,7 +214,24 @@ class Blockchain {
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
             try {
-                
+                this.chain.forEach(async(block) => {
+                    // Check if its Genesis Block
+                    if (block.height === 0) {
+                        // Check if genesis block is valid
+                        let isValid = await block.validate();
+                        if (isValid !== false){
+                            errorLog.push("Genesis Block is not valid");
+                        }
+                    // Check current block's previousBlockHash matches to make sure link isn't broken
+                    } else if (block.previousBlockHash === this.chain[block.height-1].hash) {
+                        // Check if current block is valid
+                        let isValid = await block.validate();
+                        if (isValid !== false){
+                            errorLog.push(block +"is not validated");
+                        }
+                    }
+                });
+                resolve(errorLog);
             } catch (error) {
                 reject(error);
             }
