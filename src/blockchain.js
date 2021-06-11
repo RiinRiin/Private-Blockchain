@@ -190,10 +190,10 @@ class Blockchain {
         return new Promise((resolve, reject) => {
             try {
                 this.chain.forEach((block) => {
-                    let data = block.getBData;
+                    let data = await block.getBData();
                     if (data) {
                         if (data.owner === address) {
-                            starts.push(data);
+                            stars.push(data);
                         }
                     }
                 });
