@@ -51,7 +51,7 @@ class Block {
                 resolve(true);
             } else {
                 // Returning the Block is not valid
-                reject(false);
+                resolve(false);
             }
         });
     }
@@ -77,7 +77,7 @@ class Block {
             if(this.height !== 0){
                 resolve(dataObj);
             } else {
-                reject("Genesis Block");
+                resolve(false)
             }
         });
     }
