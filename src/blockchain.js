@@ -77,12 +77,17 @@ class Blockchain {
             block.hash = SHA256(JSON.stringify(block)).toString();
             // Assign timestamp of this new block
             block.time = new Date().getTime().toString().slice(0,-3);
-            // Add the new block to the blockchain
-            this.chain.push(block);
-            // Update the new block height after pushing the new block
-            block.height = chainHeight + 1;
-            // Update the current height
-            this.height = block.height
+            // Validate block to make sure there is a link
+            let isValid = await this.validateChain();
+            // When blockchain link is not broken
+            if(isValid){
+                // Add the new block to the blockchain
+                this.chain.push(block);
+                // Update the new block height after pushing the new block
+                block.height = chainHeight + 1;
+                // Update the current height
+                this.height = block.height
+            }
             // Return the latest block added to blockchain
             resolve(block);
         });
